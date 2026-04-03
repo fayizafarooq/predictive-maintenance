@@ -744,3 +744,50 @@ body.app-page {
   .header-sub, .header-status { display: none; }
   .app-footer span:last-child { display: none; }
 }
+
+/* =============================================
+   MOBILE — Login page
+   ============================================= */
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+    min-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .login-brand {
+    padding: 1.5rem;
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand-title { font-size: 1.6rem; }
+  .brand-stats { gap: 1rem; }
+  .stat-number { font-size: 1.4rem; }
+  .brand-icon { width: 48px; height: 48px; margin-bottom: 1rem; }
+  .brand-footer { display: none; }
+  .login-form-panel {
+    width: 100%;
+    padding: 1.5rem;
+    flex: 1;
+  }
+  .login-card { width: 100%; }
+  .lock-icon { width: 40px; height: 40px; }
+  .login-title { font-size: 1.5rem; }
+  .login-desc { font-size: 0.8rem; margin-bottom: 1.5rem; }
+  .input-wrapper input { font-size: 1rem; padding: 0.85rem 2.8rem 0.85rem 2.5rem; }
+  .login-btn { padding: 0.9rem; font-size: 1rem; }
+  .login-hint { font-size: 0.75rem; }
+  .sidebar { position: fixed; z-index: 200; height: 100%; }
+  .app-main { padding: 1rem; }
+}
+ 
+@media (max-width: 480px) {
+  .login-brand { padding: 1.2rem; }
+  .brand-stats { flex-wrap: wrap; gap: 0.8rem; }
+  .login-form-panel { padding: 1.2rem; }
+  .brand-title { font-size: 1.4rem; }
+}
