@@ -142,9 +142,9 @@ function loadEmbeds() {
   }
 }
 
-// Set last-updated timestamp in sidebar
-function setLastUpdated() {
-  const el = document.getElementById("last-updated");
+// Set current date in sidebar
+function setCurrentDate() {
+  const el = document.getElementById("current-date");
   if (!el) return;
   const now = new Date();
   el.textContent = now.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
@@ -159,5 +159,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Dashboard page
   loadEmbeds();
-  setLastUpdated();
+  setCurrentDate();
 });
