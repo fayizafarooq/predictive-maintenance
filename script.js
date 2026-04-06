@@ -100,6 +100,15 @@ function toggleSidebar() {
     sidebar.classList.add("collapsed");
   }
 }
+// Auto-collapse sidebar on small screens
+function initSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  if (!sidebar) return;
+  if (window.innerWidth <= 768) {
+    sidebar.classList.add("collapsed");
+    sidebarOpen = false;
+  }
+}
 
 function showPage(pageName) {
   // Hide all pages
@@ -160,4 +169,5 @@ document.addEventListener("DOMContentLoaded", () => {
   // Dashboard page
   loadEmbeds();
   setCurrentDate();
+  initSidebar();
 });
