@@ -757,4 +757,19 @@ body.app-page {
   .bg-grid, .bg-glow, .particles {
     position: fixed;
   }
+   /* Sidebar overlays content on mobile */
+  .sidebar {
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    height: calc(100vh - var(--header-h));
+    z-index: 200;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+  }
+  .sidebar.collapsed {
+    transform: translateX(calc(-1 * var(--sidebar-w)));
+    width: var(--sidebar-w);
+    overflow: hidden;
+  }
 }
