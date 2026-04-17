@@ -77,6 +77,26 @@
           <div class="nav-indicator"></div>
         </a>
 
+        <a class="nav-item" onclick="showPage('alerts')" href="#">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <span>Alerts</span>
+          <div class="nav-indicator"></div>
+          <span class="nav-alert-badge" id="alert-badge" style="display:none;">0</span>
+        </a>
+
+        <a class="nav-item" onclick="showPage('stats')" href="#">
+          <svg viewBox="0 0 24 24" fill="none">
+            <line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <span>ML Statistics</span>
+          <div class="nav-indicator"></div>
+        </a>
+
         <a class="nav-item" onclick="showPage('about')" href="#">
           <svg viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/>
@@ -89,7 +109,7 @@
         <div class="nav-section-label" style="margin-top:2rem;">System</div>
         <div class="sidebar-info-card">
           <div class="info-row">
-            <span class="info-label">Date</span>
+            <span class="info-label">Current Date</span>
             <span class="info-val" id="current-date">—</span>
           </div>
           <div class="info-row">
@@ -141,7 +161,7 @@
               </div>
             </div>
           </div>
-          <!-- Actual iframe — will show once embed link is added -->
+          <!-- Actual iframe  -->
           <iframe id="iframe-fleet" class="power-bi-frame hidden" src="" frameborder="0" allowfullscreen="true"></iframe>
         </div>
       </div>
@@ -180,6 +200,344 @@
           </div>
           <iframe id="iframe-machine" class="power-bi-frame hidden" src="" frameborder="0" allowfullscreen="true"></iframe>
         </div>
+      </div>
+
+      <!-- PAGE: Alerts -->
+      <div class="page-content" id="page-alerts">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Maintenance Alerts</h2>
+            <p class="page-desc">Send and track maintenance alerts for at-risk machines</p>
+          </div>
+          <div class="page-badge">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#4A9EFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#4A9EFF" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <span id="alert-count-badge">0 Alerts Sent</span>
+          </div>
+        </div>
+
+        <!-- Alert Form -->
+        <div class="alert-form-card">
+          <div class="alert-form-header">
+            <svg viewBox="0 0 24 24" fill="none" style="width:20px;height:20px;">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#FFB347" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="12" y1="9" x2="12" y2="13" stroke="#FFB347" stroke-width="1.7" stroke-linecap="round"/>
+              <line x1="12" y1="17" x2="12.01" y2="17" stroke="#FFB347" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>Send Maintenance Alert</span>
+          </div>
+          <div class="alert-form-body">
+            <div class="alert-form-row">
+              <div class="alert-field">
+                <label>Machine ID</label>
+                <select id="alert-machine">
+                  <option value="">Select Machine...</option>
+                  <option>M001</option><option>M002</option><option>M003</option>
+                  <option>M004</option><option>M005</option><option>M006</option>
+                  <option>M007</option><option>M008</option><option>M009</option>
+                  <option>M010</option><option>M011</option><option>M012</option>
+                  <option>M013</option><option>M014</option><option>M015</option>
+                  <option>M016</option><option>M017</option><option>M018</option>
+                  <option>M019</option><option>M020</option><option>M021</option>
+                  <option>M022</option><option>M023</option><option>M024</option>
+                  <option>M025</option><option>M026</option><option>M027</option>
+                  <option>M028</option><option>M029</option><option>M030</option>
+                </select>
+              </div>
+              <div class="alert-field">
+                <label>Risk Level</label>
+                <select id="alert-risk">
+                  <option value="">Select Risk Level...</option>
+                  <option value="High Risk">High Risk</option>
+                  <option value="Medium Risk">Medium Risk</option>
+                  <option value="Low Risk">Low Risk</option>
+                </select>
+              </div>
+              <div class="alert-field alert-field-wide">
+                <label>Note (optional)</label>
+                <input type="text" id="alert-note" placeholder="e.g. Schedule inspection immediately..." />
+              </div>
+            </div>
+            <button class="alert-send-btn" onclick="sendAlert()">
+              <svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;">
+                <line x1="22" y1="2" x2="11" y2="13" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                <polygon points="22,2 15,22 11,13 2,9" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Send Alert
+            </button>
+          </div>
+        </div>
+
+        <!-- Success toast -->
+        <div class="alert-toast" id="alert-toast">
+          <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px;flex-shrink:0;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="#4ECDC4" stroke-width="1.8" stroke-linecap="round"/>
+            <polyline points="22,4 12,14.01 9,11.01" stroke="#4ECDC4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="alert-toast-msg">Alert sent successfully!</span>
+        </div>
+
+        <!-- Alert Log -->
+        <div class="alert-log-header">
+          <span class="stats-section-title" style="border:none;margin:0;">Recent Alerts</span>
+          <button class="alert-clear-btn" onclick="clearAlerts()">Clear All</button>
+        </div>
+
+        <div id="alert-log-empty" class="alert-empty">
+          <svg viewBox="0 0 24 24" fill="none" style="width:48px;height:48px;opacity:0.3;">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p>No alerts sent yet.<br>Use the form above to send a maintenance alert.</p>
+        </div>
+
+        <div id="alert-log-list" class="alert-log-list"></div>
+      </div>
+
+      <!-- PAGE: ML Statistics -->
+      <div class="page-content" id="page-stats">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">ML Model Statistics</h2>
+            <p class="page-desc">Performance evaluation of machine learning models trained for failure prediction</p>
+          </div>
+          <div class="page-badge">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke="#4A9EFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            XGBoost Selected
+          </div>
+        </div>
+
+        <!-- Top stat cards -->
+        <div class="stats-cards-row">
+          <div class="stats-card">
+            <div class="stats-card-icon" style="background: rgba(78,205,196,0.15);">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#4ECDC4" stroke-width="1.7" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="#4ECDC4" stroke-width="1.7"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="#4ECDC4" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div class="stats-card-body">
+              <span class="stats-card-val" style="color: var(--success);">1,500</span>
+              <span class="stats-card-label">Training Records</span>
+            </div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card-icon" style="background: rgba(74,158,255,0.15);">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="#4A9EFF" stroke-width="1.7"/><line x1="8" y1="21" x2="16" y2="21" stroke="#4A9EFF" stroke-width="1.7" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="#4A9EFF" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div class="stats-card-body">
+              <span class="stats-card-val" style="color: var(--accent);">3</span>
+              <span class="stats-card-label">Models Trained</span>
+            </div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card-icon" style="background: rgba(255,179,71,0.15);">
+              <svg viewBox="0 0 24 24" fill="none"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke="#FFB347" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="stats-card-body">
+              <span class="stats-card-val" style="color: var(--warning);">92.2%</span>
+              <span class="stats-card-label">Best Recall (XGBoost)</span>
+            </div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card-icon" style="background: rgba(255,107,107,0.15);">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#FF6B6B" stroke-width="1.7"/><path d="M12 8v4M12 16h.01" stroke="#FF6B6B" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div class="stats-card-body">
+              <span class="stats-card-val" style="color: var(--danger);">30</span>
+              <span class="stats-card-label">Machines Monitored</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Model comparison -->
+        <div class="stats-section-title">Model Performance Comparison</div>
+        <div class="stats-models-grid">
+
+          <!-- Logistic Regression -->
+          <div class="model-card">
+            <div class="model-card-header">
+              <span class="model-name">Logistic Regression</span>
+              <span class="model-badge" style="background: rgba(78,205,196,0.15); color: var(--success);">Baseline</span>
+            </div>
+            <div class="model-metrics">
+              <div class="metric-row">
+                <span class="metric-label">Accuracy</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 62.3%; background: var(--success);"></div>
+                </div>
+                <span class="metric-val">62.3%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Recall</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 54%; background: var(--success);"></div>
+                </div>
+                <span class="metric-val">54.0%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Precision</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 61%; background: var(--success);"></div>
+                </div>
+                <span class="metric-val">61.0%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">F1-Score</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 57%; background: var(--success);"></div>
+                </div>
+                <span class="metric-val">57.0%</span>
+              </div>
+            </div>
+            <p class="model-note">Highest accuracy due to linear structure of synthetic data generated with sigmoid function.</p>
+          </div>
+
+          <!-- XGBoost -->
+          <div class="model-card model-card-selected">
+            <div class="model-card-header">
+              <span class="model-name">XGBoost</span>
+              <span class="model-badge" style="background: rgba(74,158,255,0.2); color: var(--accent);">✓ Primary Model</span>
+            </div>
+            <div class="model-metrics">
+              <div class="metric-row">
+                <span class="metric-label">Accuracy</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 61.7%; background: var(--accent);"></div>
+                </div>
+                <span class="metric-val">61.7%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Recall</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 92.2%; background: var(--accent);"></div>
+                </div>
+                <span class="metric-val">92.2%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Precision</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 58%; background: var(--accent);"></div>
+                </div>
+                <span class="metric-val">58.0%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">F1-Score</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 71%; background: var(--accent);"></div>
+                </div>
+                <span class="metric-val">71.0%</span>
+              </div>
+            </div>
+            <p class="model-note">Selected as primary model. GridSearchCV optimised for recall — catching real failures is more important than false alarms.</p>
+          </div>
+
+          <!-- Random Forest -->
+          <div class="model-card">
+            <div class="model-card-header">
+              <span class="model-name">Random Forest</span>
+              <span class="model-badge" style="background: rgba(255,179,71,0.15); color: var(--warning);">Ensemble</span>
+            </div>
+            <div class="model-metrics">
+              <div class="metric-row">
+                <span class="metric-label">Accuracy</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 57.7%; background: var(--warning);"></div>
+                </div>
+                <span class="metric-val">57.7%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Recall</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 49%; background: var(--warning);"></div>
+                </div>
+                <span class="metric-val">49.0%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Precision</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 59%; background: var(--warning);"></div>
+                </div>
+                <span class="metric-val">59.0%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">F1-Score</span>
+                <div class="metric-bar-wrap">
+                  <div class="metric-bar" style="width: 53%; background: var(--warning);"></div>
+                </div>
+                <span class="metric-val">53.0%</span>
+              </div>
+            </div>
+            <p class="model-note">Lowest accuracy among the three models. Prone to overfitting on the synthetic dataset structure.</p>
+          </div>
+        </div>
+
+        <!-- Dataset & System Info -->
+        <div class="stats-section-title">Dataset & System Overview</div>
+        <div class="stats-info-grid">
+          <div class="stats-info-card">
+            <div class="stats-info-icon">
+              <svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="9" ry="3" stroke="#4A9EFF" stroke-width="1.7"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" stroke="#4A9EFF" stroke-width="1.7"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" stroke="#4A9EFF" stroke-width="1.7"/></svg>
+            </div>
+            <div>
+              <div class="stats-info-label">Dataset Size</div>
+              <div class="stats-info-val">1,500 rows × 8 features</div>
+            </div>
+          </div>
+          <div class="stats-info-card">
+            <div class="stats-info-icon">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#4A9EFF" stroke-width="1.7"/><path d="M3 9h18M9 21V9" stroke="#4A9EFF" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="stats-info-label">Train / Test Split</div>
+              <div class="stats-info-val">80% Training / 20% Testing</div>
+            </div>
+          </div>
+          <div class="stats-info-card">
+            <div class="stats-info-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#4A9EFF" stroke-width="1.7" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#4A9EFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="stats-info-label">Preprocessing</div>
+              <div class="stats-info-val">StandardScaler normalisation</div>
+            </div>
+          </div>
+          <div class="stats-info-card">
+            <div class="stats-info-icon">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="#4A9EFF" stroke-width="1.7"/><path d="M21 21l-4.35-4.35" stroke="#4A9EFF" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="stats-info-label">Optimisation</div>
+              <div class="stats-info-val">GridSearchCV (recall-optimised)</div>
+            </div>
+          </div>
+          <div class="stats-info-card">
+            <div class="stats-info-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="#4A9EFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="stats-info-label">Failure Logic</div>
+              <div class="stats-info-val">Sigmoid function (realistic)</div>
+            </div>
+          </div>
+          <div class="stats-info-card">
+            <div class="stats-info-icon">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke="#4A9EFF" stroke-width="1.7"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" stroke="#4A9EFF" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="stats-info-label">Database Records</div>
+              <div class="stats-info-val">30 machines × daily updates</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Why Recall -->
+        <div class="stats-recall-box">
+          <div class="stats-recall-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#FFB347" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="13" stroke="#FFB347" stroke-width="1.7" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="#FFB347" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="stats-recall-title">Why Recall is the Primary Metric</div>
+            <div class="stats-recall-desc">In predictive maintenance, a missed failure (false negative) is far more costly than a false alarm (false positive). Missing a real failure can lead to unplanned downtime, safety risks, and expensive repairs. Therefore, XGBoost was selected as the primary model despite lower accuracy, because its 92.2% recall ensures the vast majority of real failures are caught in time.</div>
+          </div>
+        </div>
+
       </div>
 
       <!-- PAGE: About -->
@@ -243,7 +601,7 @@
             </div>
             <div class="about-card-body">
               <h3>Academic Context</h3>
-              <p>Final Year Project submitted in partial fulfilment of the requirements for the degree at <strong>Arab Open University — Bahrain Branch</strong>.</p> <br>
+              <p>Final Year Project submitted in partial fulfilment of the requirements for the degree at <strong>Arab Open University — Bahrain Branch</strong>, affiliated with the UK Open University.</p> <br>
               <p> The project addresses a real-world industrial challenge, unplanned equipment failure, by applying supervised machine learning techniques to predict failures before they occur. Synthetic data was utilised due to the unavailability of proprietary industrial datasets.</p> <br>
               <p>The system demonstrates a complete data science pipeline, from raw data generation through to a live interactive dashboard, following the CRISP-DM methodology throughout.</p>
             </div>
