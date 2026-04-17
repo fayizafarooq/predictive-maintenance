@@ -89,7 +89,7 @@ function createParticles() {
 // DASHBOARD PAGE FUNCTIONS
 // =============================================
 
-let sidebarOpen = true;
+let sidebarOpen = window.innerWidth > 768;
 
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
@@ -100,7 +100,8 @@ function toggleSidebar() {
     sidebar.classList.add("collapsed");
   }
 }
-// Auto-collapse sidebar on small screens
+
+// Collapse sidebar on mobile at startup
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
   if (!sidebar) return;
@@ -160,6 +161,91 @@ function setCurrentDate() {
 }
 
 // =============================================
+// ALERTS PAGE FUNCTIONS
+// =============================================
+
+function loadAlerts() {
+  const alerts = JSON.parse(localStorage.getItem('maintenanceAlerts') || '[]');
+  const logList = document.getElementById('alert-log-list');
+  const emptyState = document.getElementById('alert-log-empty');
+  const badge = document.getElementById('alert-badge');
+  const countBadge = document.getElementById('alert-count-badge');
+
+  if (!logList) return;
+
+  if (alerts.length === 0) {
+    emptyState.style.display = 'flex';
+    logList.innerHTML = '';
+    if (badge) badge.style.display = 'none';
+    if (countBadge) countBadge.textContent = '0 Alerts Sent';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  if (badge) { badge.style.display = 'flex'; badge.textContent = alerts.length; }
+  if (countBadge) countBadge.textContent = alerts.length + ' Alert' + (alerts.length > 1 ? 's' : '') + ' Sent';
+
+  logList.innerHTML = alerts.slice().reverse().map((a, i) => {
+    const riskColor = a.risk === 'High Risk' ? 'var(--danger)' : a.risk === 'Medium Risk' ? 'var(--warning)' : 'var(--success)';
+    return `
+      <div class="alert-log-item" style="animation-delay:${i * 0.05}s">
+        <div class="alert-log-icon" style="background: ${riskColor}22; border: 1px solid ${riskColor}44; width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="${riskColor}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="${riskColor}" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="alert-log-body">
+          <div class="alert-log-title">
+            <span class="alert-log-machine">${a.machine}</span>
+            <span class="alert-log-risk" style="color:${riskColor}; background:${riskColor}18; font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:20px; font-weight:600;">${a.risk}</span>
+          </div>
+          ${a.note ? `<div class="alert-log-note">${a.note}</div>` : ''}
+        </div>
+        <div class="alert-log-time">${a.time}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function sendAlert() {
+  const machine = document.getElementById('alert-machine').value;
+  const risk = document.getElementById('alert-risk').value;
+  const note = document.getElementById('alert-note').value.trim();
+
+  if (!machine || !risk) {
+    alert('Please select a Machine ID and Risk Level.');
+    return;
+  }
+
+  const alerts = JSON.parse(localStorage.getItem('maintenanceAlerts') || '[]');
+  const now = new Date();
+  const time = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
+               ' · ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+  alerts.push({ machine, risk, note, time });
+  localStorage.setItem('maintenanceAlerts', JSON.stringify(alerts));
+
+  document.getElementById('alert-machine').value = '';
+  document.getElementById('alert-risk').value = '';
+  document.getElementById('alert-note').value = '';
+
+  const toast = document.getElementById('alert-toast');
+  document.getElementById('alert-toast-msg').textContent = `Alert sent for ${machine} — ${risk}!`;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+
+  loadAlerts();
+}
+
+function clearAlerts() {
+  if (confirm('Clear all alerts?')) {
+    localStorage.removeItem('maintenanceAlerts');
+    loadAlerts();
+  }
+}
+
+// =============================================
 // INIT
 // =============================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -170,4 +256,5 @@ document.addEventListener("DOMContentLoaded", () => {
   loadEmbeds();
   setCurrentDate();
   initSidebar();
+  loadAlerts();
 });
