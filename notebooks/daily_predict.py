@@ -4,7 +4,7 @@ daily_predict.py — Predictive Maintenance Daily Batch Script (v2)
 
 This script tracks 30 FIXED machines over time.
 Each machine has a realistic deterioration pattern, where its sensor readings gradually worsen until the machine reaches High Risk.
-
+"""
 
 import pandas as pd
 import numpy as np
