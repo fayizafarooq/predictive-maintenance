@@ -5,22 +5,11 @@ daily_predict.py — Predictive Maintenance Daily Batch Script (v2)
 This script tracks 30 FIXED machines over time.
 Each machine has a realistic deterioration pattern, where its sensor readings gradually worsen until the machine reaches High Risk.
 
-Run this script once per day. It will:
-  1. Load or create the 30 fixed machines with their current health state
-  2. Update each machine's sensor readings (gradual deterioration)
-  3. Predict failure risk using trained ML models
-  4. Calculate health score, days to failure, and status changes
-  5. Append today's readings to the historical CSV (for Power BI)
-  6. Save today's readings to SQLite database (for traceability)
-  7. Power BI refreshes automatically from the CSV
-
-Usage:
-    python daily_predict.py
-"""
 
 import pandas as pd
 import numpy as np
-from datetime import date, timedelta
+from datetime import datetime, timedelta, timezone, date
+import zoneinfo
 import os
 import sqlite3
 from sklearn.model_selection import train_test_split
@@ -28,6 +17,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
+
+# ── Bahrain timezone ─────────────────────────────────────────────────────────
+BAHRAIN_TZ = zoneinfo.ZoneInfo("Asia/Bahrain")
+today = datetime.now(BAHRAIN_TZ).date()   
 
 # Configuration ─────────────────────────────────────────────────────────────
 PREDICTIONS_FILE = 'equipment_failure_predictions.csv'
@@ -65,9 +58,6 @@ xgb_model.fit(X_train_scaled, y_train)
 print('Models trained!')
 
 # Step 2: Load or create machine states ────────────────────────────────────
-# Each machine has a "deterioration rate" — how fast it wears out
-# and a "current state" — where it currently is in its lifecycle
-
 if os.path.exists(MACHINE_STATE_FILE):
     states = pd.read_csv(MACHINE_STATE_FILE)
     print(f'Loaded existing machine states for {len(states)} machines.')
@@ -77,33 +67,18 @@ else:
 
     machine_ids = [f'M{str(i+1).zfill(3)}' for i in range(NUM_MACHINES)]
 
-    # Each machine starts at a different point in its lifecycle
-    # so they don't all fail at the same time
     states = pd.DataFrame({
         'machine_id': machine_ids,
-
-        # Base sensor values — each machine is slightly different
         'base_temperature': np.random.normal(65, 5, NUM_MACHINES),
         'base_vibration': np.random.normal(0.40, 0.05, NUM_MACHINES),
         'base_pressure': np.random.normal(28, 3, NUM_MACHINES),
-
-        # Current sensor values — start at base
         'current_temperature': np.random.normal(65, 5, NUM_MACHINES),
         'current_vibration': np.random.normal(0.40, 0.05, NUM_MACHINES),
         'current_pressure': np.random.normal(28, 3, NUM_MACHINES),
         'current_operating_hours': np.random.randint(200, 3000, NUM_MACHINES),
-
-        # Deterioration rate — how fast each machine degrades
-        # higher = faster deterioration
         'deterioration_rate': np.random.uniform(0.3, 1.5, NUM_MACHINES),
-
-        # Days since last maintenance — machines due for maintenance degrade faster
         'days_since_maintenance': np.random.randint(0, 90, NUM_MACHINES),
-
-        # Previous risk level — to detect status changes
         'previous_risk': np.random.choice(['Low Risk', 'Low Risk', 'Medium Risk'], NUM_MACHINES),
-
-        # Health score — starts between 60-100
         'health_score': np.random.uniform(60, 100, NUM_MACHINES),
     })
 
@@ -111,25 +86,21 @@ else:
     print('Machine states created!')
 
 # Step 3: Update machine states for today ───────────────────────────────────
-print(f'\nUpdating machine states for {date.today()}...')
+print(f'\nUpdating machine states for {today}...')
 
-np.random.seed(int(date.today().strftime('%Y%m%d')))  # different randomness each day
+np.random.seed(int(today.strftime('%Y%m%d')))  # different randomness each day
 
-maintained_today = []  # track machines maintained today
+maintained_today = []
 
 for idx in states.index:
     rate = states.loc[idx, 'deterioration_rate']
 
-    # Gradually increase sensor readings based on deterioration rate
-    # Small daily increase + random noise
     states.loc[idx, 'current_temperature'] += rate * np.random.uniform(0.1, 0.4)
     states.loc[idx, 'current_vibration'] += rate * np.random.uniform(0.002, 0.008)
     states.loc[idx, 'current_pressure'] += rate * np.random.uniform(0.05, 0.2)
-    states.loc[idx, 'current_operating_hours'] += np.random.randint(6, 12)  # 6-12 hours per day
+    states.loc[idx, 'current_operating_hours'] += np.random.randint(6, 12)
     states.loc[idx, 'days_since_maintenance'] += 1
 
-    # If machine reaches critical levels, simulate maintenance reset (some chance)
-    # 10% chance of maintenance if health is very low
     if states.loc[idx, 'health_score'] < 20 and np.random.random() < 0.10:
         maintained_today.append(states.loc[idx, 'machine_id'])
         print(f"  ⚙️  Maintenance performed on {states.loc[idx, 'machine_id']}!")
@@ -149,7 +120,6 @@ today_features = pd.DataFrame({
 
 today_scaled = pd.DataFrame(scaler.transform(today_features), columns=X.columns)
 
-# Predictions
 log_preds = log_model.predict(today_scaled)
 rf_preds = rf_model.predict(today_scaled)
 xgb_preds = xgb_model.predict(today_scaled)
@@ -169,14 +139,12 @@ def risk_category(prob):
 
 risk_levels = [risk_category(p) for p in xgb_probs]
 
-# Update health score — decreases as failure probability increases
 for idx in states.index:
     prob = xgb_probs[idx]
     states.loc[idx, 'health_score'] = max(0, min(100, (1 - prob) * 100))
 
 health_scores = states['health_score'].values
 
-# Status change — did risk get worse since yesterday?
 def status_change(prev, curr):
     order = {'Low Risk': 0, 'Medium Risk': 1, 'High Risk': 2}
     if order[curr] > order[prev]:
@@ -189,11 +157,9 @@ def status_change(prev, curr):
 trends = [status_change(states.loc[i, 'previous_risk'], risk_levels[i])
         for i in states.index]
 
-# Days to failure estimate — based on current health score and deterioration rate
 def estimate_days_to_failure(health, rate):
     if health <= 0:
         return 0
-    # Rough estimate: at current rate, how many days until health hits 0
     daily_health_loss = rate * 0.8
     if daily_health_loss <= 0:
         return 999
@@ -205,13 +171,13 @@ days_to_failure = [
 ]
 
 predicted_failure_date = [
-    (date.today() + timedelta(days=d)).strftime('%Y-%m-%d') if d < 999 else 'No failure predicted'
+    (today + timedelta(days=d)).strftime('%Y-%m-%d') if d < 999 else 'No failure predicted'
     for d in days_to_failure
 ]
 
 # Step 6: Build today's dataframe ──────────────────────────────────────────
 today_df = pd.DataFrame({
-    'date': date.today().strftime('%Y-%m-%d'),
+    'date': today.strftime('%Y-%m-%d'),
     'machine_id': states['machine_id'],
     'temperature': states['current_temperature'].round(2),
     'vibration': states['current_vibration'].round(4),
@@ -245,17 +211,10 @@ else:
 combined_df.to_csv(PREDICTIONS_FILE, index=False)
 
 # Step 9: Save today's predictions to SQLite database ───────────────────────
-# SQLite provides structured storage for traceability and audit purposes
-# This runs alongside the CSV save — Power BI reads CSV, SQLite stores for records
 try:
     conn = sqlite3.connect(DATABASE_FILE)
-
-    # Append only today's new records to the database
-    # if_exists='append' ensures we don't overwrite existing data
     today_df.to_sql('predictions', conn, if_exists='append', index=False)
     conn.commit()
-
-    # Quick verification — show total records now in database
     cursor = conn.cursor()
     cursor.execute('SELECT COUNT(*) FROM predictions')
     total_db_records = cursor.fetchone()[0]
@@ -263,13 +222,12 @@ try:
     print(f'Database updated: {total_db_records} total records in predictions.db')
 
 except Exception as e:
-    # If database doesn't exist yet, remind user to run setup_database.py first
     print(f'Database note: Run setup_database.py first to initialise the database.')
     print(f'  Error: {e}')
 
 # Step 10: Print daily summary ───────────────────────────────────────────────
 print(f'\n{"="*50}')
-print(f'Daily Report — {date.today()}')
+print(f'Daily Report — {today}')
 print(f'{"="*50}')
 print(f"High Risk    : {risk_levels.count('High Risk')} machines")
 print(f"Medium Risk  : {risk_levels.count('Medium Risk')} machines")
@@ -309,7 +267,7 @@ for _, row in at_risk.iterrows():
     })
 
 json_data = {
-    'date'          : date.today().strftime('%Y-%m-%d'),
+    'date'          : today.strftime('%Y-%m-%d'),
     'at_risk_count' : len(at_risk_list),
     'machines'      : at_risk_list,
     'maintained'    : maintained_today
