@@ -99,6 +99,20 @@ function createParticles() {
   }
 }
 
+function toggleMobileDropdown() {
+  const menu = document.getElementById("mobile-dropdown-menu");
+  if (menu) menu.classList.toggle("show");
+}
+
+// Close mobile dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const dropdown = document.getElementById("mobile-user-dropdown");
+  const menu = document.getElementById("mobile-dropdown-menu");
+  if (menu && dropdown && !dropdown.contains(e.target)) {
+    menu.classList.remove("show");
+  }
+});
+
 // =============================================
 // DASHBOARD PAGE FUNCTIONS
 // =============================================
@@ -123,6 +137,15 @@ function initSidebar() {
     sidebar.classList.add("collapsed");
     sidebarOpen = false;
   }
+  // Close sidebar when clicking anywhere outside it on mobile
+  document.addEventListener('click', function(e) {
+    if (window.innerWidth > 768) return;
+    const toggle = document.getElementById("sidebar-toggle");
+    if (sidebarOpen && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+      sidebar.classList.add("collapsed");
+      sidebarOpen = false;
+    }
+  })
 }
 
 function showPage(pageName) {
@@ -142,7 +165,13 @@ function showPage(pageName) {
       item.classList.add("active");
     }
   });
+    // Close sidebar when option selected on mobile
+    if (window.innerWidth <= 768) {
+    document.getElementById("sidebar").classList.add("collapsed");
+    sidebarOpen = false;
+  }
 }
+
 
 function logout() {
   if (confirm("Are you sure you want to log out?")) {
@@ -268,7 +297,7 @@ function sendAlertForMachine(machineId, riskLevel, daysLeft, failureDate, btnEl)
 
   const now  = new Date();
   const time = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
-               ' · ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                ' · ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
     to_email  : ALERT_RECIPIENT,
@@ -314,7 +343,7 @@ function sendAlert() {
 
   const now  = new Date();
   const time = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
-               ' · ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                ' · ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
   btnEl.disabled = true;
   btnEl.innerHTML = `<span>Sending...</span>`;
@@ -405,133 +434,6 @@ function loadAlerts() {
             <span class="alert-log-risk" style="color:${riskColor};background:${riskColor}18;font-size:0.7rem;padding:0.2rem 0.5rem;border-radius:20px;font-weight:600;">${a.risk}</span>
           </div>
           <div class="alert-log-note">${a.note} · Sent to: ${a.email || ALERT_RECIPIENT}</div>
-        </div>
-        <div class="alert-log-time">${a.time}</div>
-      </div>`;
-  }).join('');
-}
-
-function clearAlerts() {
-  if (confirm('Clear all alerts?')) {
-    localStorage.removeItem('maintenanceAlerts');
-    loadAlerts();
-  }
-}
-
-function sendAlert() {
-  const machine = document.getElementById('alert-machine').value;
-  const risk    = document.getElementById('alert-risk').value;
-  const note    = document.getElementById('alert-note').value.trim();
-  const email   = document.getElementById('alert-email').value.trim();
-  const btnEl   = document.getElementById('alert-send-btn');
-
-  if (!machine || !risk || !email) {
-    alert('Please select a Machine ID, Risk Level and enter recipient email.');
-    return;
-  }
-
-  const now  = new Date();
-  const time = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
-               ' · ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-
-  // Button loading state
-  btnEl.disabled = true;
-  btnEl.innerHTML = `<span>Sending...</span>`;
-
-  // Send email via EmailJS
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_email  : email,
-    machine_id: machine,
-    risk_level: risk,
-    note      : note || 'No additional notes',
-    time      : time,
-    name      : 'Predictive Maintenance System'
-  }, EMAILJS_PUBLIC_KEY)
-  .then(() => {
-    // Success
-    btnEl.style.background = 'linear-gradient(135deg, #1a7a4a, var(--success))';
-    btnEl.innerHTML = `
-      <svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-        <polyline points="22,4 12,14.01 9,11.01" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Alert Sent!`;
-
-    // Save to localStorage
-    const alerts = JSON.parse(localStorage.getItem('maintenanceAlerts') || '[]');
-    alerts.push({ machine, risk, note: note || 'No additional notes', email, time });
-    localStorage.setItem('maintenanceAlerts', JSON.stringify(alerts));
-
-    // Show toast
-    const toast = document.getElementById('alert-toast');
-    document.getElementById('alert-toast-msg').textContent = `Alert sent for ${machine} — ${risk}!`;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-
-    // Reset form after 2 seconds
-    setTimeout(() => {
-      btnEl.disabled = false;
-      btnEl.style.background = '';
-      btnEl.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;">
-          <line x1="22" y1="2" x2="11" y2="13" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-          <polygon points="22,2 15,22 11,13 2,9" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Send Alert`;
-      document.getElementById('alert-machine').value = '';
-      document.getElementById('alert-risk').value    = '';
-      document.getElementById('alert-note').value    = '';
-      document.getElementById('alert-email').value   = '';
-    }, 2000);
-
-    loadAlerts();
-
-  }).catch((err) => {
-    // Error
-    btnEl.disabled = false;
-    btnEl.innerHTML = `Send Alert`;
-    alert('Failed to send alert. Please try again.');
-    console.error('EmailJS error:', err);
-  });
-}
-
-function loadAlerts() {
-  const alerts     = JSON.parse(localStorage.getItem('maintenanceAlerts') || '[]');
-  const logList    = document.getElementById('alert-log-list');
-  const emptyState = document.getElementById('alert-log-empty');
-  const badge      = document.getElementById('alert-badge');
-  const countBadge = document.getElementById('alert-count-badge');
-
-  if (!logList) return;
-
-  if (alerts.length === 0) {
-    emptyState.style.display = 'flex';
-    logList.innerHTML = '';
-    if (badge)      badge.style.display = 'none';
-    if (countBadge) countBadge.textContent = '0 Alerts Sent';
-    return;
-  }
-
-  emptyState.style.display = 'none';
-  if (badge)      { badge.style.display = 'flex'; badge.textContent = alerts.length; }
-  if (countBadge) countBadge.textContent = alerts.length + ' Alert' + (alerts.length > 1 ? 's' : '') + ' Sent';
-
-  logList.innerHTML = alerts.slice().reverse().map((a, i) => {
-    const riskColor = a.risk === 'High Risk' ? 'var(--danger)' : a.risk === 'Medium Risk' ? 'var(--warning)' : 'var(--success)';
-    return `
-      <div class="alert-log-item" style="animation-delay:${i * 0.05}s">
-        <div style="width:36px;height:36px;border-radius:8px;background:${riskColor}22;border:1px solid ${riskColor}44;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="${riskColor}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="${riskColor}" stroke-width="1.7" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="alert-log-body">
-          <div class="alert-log-title">
-            <span class="alert-log-machine">${a.machine}</span>
-            <span class="alert-log-risk" style="color:${riskColor};background:${riskColor}18;font-size:0.7rem;padding:0.2rem 0.5rem;border-radius:20px;font-weight:600;">${a.risk}</span>
-          </div>
-          <div class="alert-log-note">${a.note} · Sent to: ${a.email || 'N/A'}</div>
         </div>
         <div class="alert-log-time">${a.time}</div>
       </div>`;
