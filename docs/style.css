@@ -815,16 +815,23 @@ body.app-page {
 /* Credentials Modal */
 .login-card { position: relative; }
 .credentials-modal {
-  display: none;
   position: absolute;
   bottom: 60px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(8px) scale(0.95);
+  transform-origin: bottom center;
   z-index: 100;
   width: 220px;
-  animation: fadeInUp 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
-.credentials-modal.show { display: block; }
+.credentials-modal.show { 
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) scale(1); 
+}
 .credentials-content {
   background: var(--bg-card);
   border: 1px solid rgba(74,158,255,0.5);
@@ -1236,6 +1243,7 @@ body.app-page {
   color: var(--text-secondary);
   line-height: 1.7;
 }
+.mobile-user-dropdown { display: none; }
 
 @media (max-width: 768px) {
   .stats-cards-row { grid-template-columns: repeat(2, 1fr); }
@@ -1268,6 +1276,45 @@ body.app-page {
     position: fixed;
   }
 
+  /* Hide desktop user/logout, show mobile dropdown */
+  .header-user { display: none; }
+  .logout-btn { display: none; }
+  .header-title { font-size: 0.95rem; }
+
+  .mobile-user-dropdown { position: relative; display: flex; align-items: center; }
+  .mobile-dropdown-trigger {
+    display: flex; align-items: center; gap: 4px;
+    background: none; border: none; cursor: pointer;
+    color: var(--text-secondary);
+  }
+  .mobile-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 140px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    z-index: 300;
+    overflow: hidden;
+  }
+  .mobile-dropdown-menu.show { display: block; }
+  .mobile-dropdown-item {
+    display: flex; align-items: center;
+    padding: 0.7rem 1rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .mobile-dropdown-name { color: var(--text-primary); font-weight: 500; cursor: default; }
+  .mobile-dropdown-divider { height: 1px; background: var(--border); }
+  .mobile-dropdown-logout { color: var(--danger); }
+
   /* Sidebar overlays content on mobile */
   .sidebar {
     position: fixed;
@@ -1283,4 +1330,5 @@ body.app-page {
     width: var(--sidebar-w);
     overflow: hidden;
   }
+  
 }
