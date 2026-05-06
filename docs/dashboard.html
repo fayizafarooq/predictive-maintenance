@@ -49,6 +49,18 @@
         </svg>
         Logout
       </button>
+        <!-- Mobile only dropdown -->
+      <div class="mobile-user-dropdown" id="mobile-user-dropdown">
+        <button class="mobile-dropdown-trigger" onclick="toggleMobileDropdown()">
+          <div class="user-avatar">A</div>
+          <svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mobile-dropdown-menu" id="mobile-dropdown-menu">
+          <div class="mobile-dropdown-item mobile-dropdown-name">Admin</div>
+          <div class="mobile-dropdown-divider"></div>
+          <button class="mobile-dropdown-item mobile-dropdown-logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -647,15 +659,15 @@
                   <div class="tech-tags">
                     <span class="tag">VS Code</span>
                     <span class="tag">Git</span>
-                    <span class="tag">GitHub Pages</span>
+                    <span class="tag">GitHub</span>
                     <span class="tag">Jupyter</span>
                   </div>
                 </div>
                 <div>
                   <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.4rem;">Automation & Storage</div>
                   <div class="tech-tags">
-                    <span class="tag">Task Scheduler</span>
-                    <span class="tag">Microsoft OneDrive</span>
+                    <span class="tag">GitHub Actions</span>
+                    <span class="tag">GitHub Repository</span>
                   </div>
                 </div>
               </div>
