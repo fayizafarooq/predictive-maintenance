@@ -98,6 +98,19 @@ function createParticles() {
     container.appendChild(p);
   }
 }
+function toggleMobileDropdown() {
+  const menu = document.getElementById("mobile-dropdown-menu");
+  if (menu) menu.classList.toggle("show");
+}
+
+// Close mobile dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const dropdown = document.getElementById("mobile-user-dropdown");
+  const menu = document.getElementById("mobile-dropdown-menu");
+  if (menu && dropdown && !dropdown.contains(e.target)) {
+    menu.classList.remove("show");
+  }
+});
 
 // =============================================
 // DASHBOARD PAGE FUNCTIONS
@@ -123,6 +136,15 @@ function initSidebar() {
     sidebar.classList.add("collapsed");
     sidebarOpen = false;
   }
+   // Close sidebar when clicking anywhere outside it on mobile
+  document.addEventListener('click', function(e) {
+    if (window.innerWidth > 768) return;
+    const toggle = document.getElementById("sidebar-toggle");
+    if (sidebarOpen && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+      sidebar.classList.add("collapsed");
+      sidebarOpen = false;
+    }
+  })
 }
 
 function showPage(pageName) {
@@ -142,6 +164,12 @@ function showPage(pageName) {
       item.classList.add("active");
     }
   });
+  // Close sidebar when option selected on mobile
+    if (window.innerWidth <= 768) {
+    document.getElementById("sidebar").classList.add("collapsed");
+    sidebarOpen = false;
+  }
+
 }
 
 function logout() {
@@ -301,7 +329,7 @@ function sendAlertForMachine(machineId, riskLevel, daysLeft, failureDate, btnEl)
   });
 }
 
-function sendAlert() {
+function sendAlert() { //1
   const machine = document.getElementById('alert-machine').value;
   const risk    = document.getElementById('alert-risk').value;
   const note    = document.getElementById('alert-note').value.trim();
@@ -418,7 +446,7 @@ function clearAlerts() {
   }
 }
 
-function sendAlert() {
+function sendAlert() { //2
   const machine = document.getElementById('alert-machine').value;
   const risk    = document.getElementById('alert-risk').value;
   const note    = document.getElementById('alert-note').value.trim();
