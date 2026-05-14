@@ -1,138 +1,127 @@
 {
-  "date": "2026-05-14",
-  "at_risk_count": 12,
+  "date": "2026-05-15",
+  "at_risk_count": 11,
   "machines": [
     {
       "machine_id": "M003",
       "failure_risk_level": "High Risk",
-      "health_score": 16.3,
-      "days_to_failure": 14,
-      "predicted_failure_date": "2026-05-28",
+      "health_score": 14.5,
+      "days_to_failure": 12,
+      "predicted_failure_date": "2026-05-27",
       "trend": "Stable",
-      "temperature": 71.37,
-      "vibration": 0.4513,
-      "pressure": 26.38
-    },
-    {
-      "machine_id": "M011",
-      "failure_risk_level": "High Risk",
-      "health_score": 27.0,
-      "days_to_failure": 25,
-      "predicted_failure_date": "2026-06-08",
-      "trend": "Stable",
-      "temperature": 78.78,
-      "vibration": 0.7216,
-      "pressure": 34.24
+      "temperature": 71.54,
+      "vibration": 0.4592,
+      "pressure": 26.52
     },
     {
       "machine_id": "M002",
       "failure_risk_level": "High Risk",
-      "health_score": 30.8,
-      "days_to_failure": 29,
-      "predicted_failure_date": "2026-06-12",
+      "health_score": 21.9,
+      "days_to_failure": 20,
+      "predicted_failure_date": "2026-06-04",
       "trend": "Stable",
-      "temperature": 68.2,
-      "vibration": 0.5681,
-      "pressure": 29.41
+      "temperature": 68.57,
+      "vibration": 0.5711,
+      "pressure": 29.48
     },
     {
-      "machine_id": "M021",
+      "machine_id": "M011",
       "failure_risk_level": "High Risk",
-      "health_score": 29.8,
+      "health_score": 36.9,
       "days_to_failure": 35,
-      "predicted_failure_date": "2026-06-18",
+      "predicted_failure_date": "2026-06-19",
       "trend": "Stable",
-      "temperature": 80.77,
-      "vibration": 0.5773,
-      "pressure": 30.97
-    },
-    {
-      "machine_id": "M030",
-      "failure_risk_level": "High Risk",
-      "health_score": 36.1,
-      "days_to_failure": 40,
-      "predicted_failure_date": "2026-06-23",
-      "trend": "Stable",
-      "temperature": 74.52,
-      "vibration": 0.6516,
-      "pressure": 34.61
+      "temperature": 79.19,
+      "vibration": 0.7279,
+      "pressure": 34.33
     },
     {
       "machine_id": "M016",
       "failure_risk_level": "High Risk",
-      "health_score": 27.0,
-      "days_to_failure": 41,
+      "health_score": 26.0,
+      "days_to_failure": 40,
       "predicted_failure_date": "2026-06-24",
       "trend": "Stable",
-      "temperature": 77.69,
-      "vibration": 0.7247,
-      "pressure": 34.72
+      "temperature": 77.98,
+      "vibration": 0.7302,
+      "pressure": 34.78
+    },
+    {
+      "machine_id": "M014",
+      "failure_risk_level": "High Risk",
+      "health_score": 38.7,
+      "days_to_failure": 50,
+      "predicted_failure_date": "2026-07-04",
+      "trend": "Deteriorating",
+      "temperature": 66.47,
+      "vibration": 0.6102,
+      "pressure": 38.36
     },
     {
       "machine_id": "M001",
       "failure_risk_level": "High Risk",
-      "health_score": 31.2,
+      "health_score": 31.0,
       "days_to_failure": 50,
-      "predicted_failure_date": "2026-07-03",
-      "trend": "Deteriorating",
-      "temperature": 68.31,
-      "vibration": 0.3925,
-      "pressure": 27.16
+      "predicted_failure_date": "2026-07-04",
+      "trend": "Stable",
+      "temperature": 68.49,
+      "vibration": 0.397,
+      "pressure": 27.26
     },
     {
       "machine_id": "M015",
       "failure_risk_level": "High Risk",
-      "health_score": 35.7,
-      "days_to_failure": 68,
-      "predicted_failure_date": "2026-07-21",
+      "health_score": 33.6,
+      "days_to_failure": 64,
+      "predicted_failure_date": "2026-07-18",
       "trend": "Stable",
-      "temperature": 73.94,
-      "vibration": 0.5349,
-      "pressure": 35.26
+      "temperature": 74.01,
+      "vibration": 0.5389,
+      "pressure": 35.38
+    },
+    {
+      "machine_id": "M008",
+      "failure_risk_level": "High Risk",
+      "health_score": 38.0,
+      "days_to_failure": 78,
+      "predicted_failure_date": "2026-08-01",
+      "trend": "Deteriorating",
+      "temperature": 75.82,
+      "vibration": 0.5437,
+      "pressure": 33.89
     },
     {
       "machine_id": "M005",
       "failure_risk_level": "High Risk",
-      "health_score": 38.5,
-      "days_to_failure": 87,
-      "predicted_failure_date": "2026-08-09",
+      "health_score": 36.8,
+      "days_to_failure": 83,
+      "predicted_failure_date": "2026-08-06",
       "trend": "Stable",
-      "temperature": 71.85,
-      "vibration": 0.5967,
-      "pressure": 34.13
+      "temperature": 71.96,
+      "vibration": 0.5985,
+      "pressure": 34.23
     },
     {
       "machine_id": "M022",
       "failure_risk_level": "High Risk",
       "health_score": 38.3,
       "days_to_failure": 89,
-      "predicted_failure_date": "2026-08-11",
-      "trend": "Deteriorating",
-      "temperature": 72.87,
-      "vibration": 0.6115,
-      "pressure": 29.37
-    },
-    {
-      "machine_id": "M019",
-      "failure_risk_level": "High Risk",
-      "health_score": 39.4,
-      "days_to_failure": 123,
-      "predicted_failure_date": "2026-09-14",
-      "trend": "Deteriorating",
-      "temperature": 64.19,
-      "vibration": 0.4934,
-      "pressure": 30.21
+      "predicted_failure_date": "2026-08-12",
+      "trend": "Stable",
+      "temperature": 72.97,
+      "vibration": 0.6152,
+      "pressure": 29.48
     },
     {
       "machine_id": "M020",
       "failure_risk_level": "High Risk",
       "health_score": 38.0,
       "days_to_failure": 155,
-      "predicted_failure_date": "2026-10-16",
+      "predicted_failure_date": "2026-10-17",
       "trend": "Stable",
-      "temperature": 58.01,
-      "vibration": 0.3127,
-      "pressure": 22.08
+      "temperature": 58.11,
+      "vibration": 0.3134,
+      "pressure": 22.13
     }
   ],
   "maintained": []
